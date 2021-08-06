@@ -32,7 +32,7 @@ impl PidFdExt for PidFd {
     }
 }
 
-/// Takes the file description referred to by `target_fd` within `pid_fd`
+/// Takes the file description referred to by `target_fd` within `pidfd`
 /// and creates a duplicate of it within this process.
 ///
 /// This is a convenience wrapper. For the raw syscall, see [`pidfd_getfd`].
