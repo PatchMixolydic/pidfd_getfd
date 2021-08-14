@@ -36,7 +36,7 @@ env:
   CARGO_NET_RETRY: 10
   CI: 1
   RUST_BACKTRACE: short
-  RUSTDOCFLAGS: "-F broken-intra-doc-links"
+  RUSTDOCFLAGS: "-F rustdoc::broken-intra-doc-links"
   RUSTUP_MAX_RETRIES: 10
 
 jobs:
