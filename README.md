@@ -40,13 +40,15 @@ use pidfd::PidFd;
 use pidfd_getfd::{GetFdFlags, PidFdExt};
 use std::process::Command;
 
-let child = Command::new("/usr/bin/foo").expect("failed to run `foo`");
+let child = Command::new("/usr/bin/foo").spawn().expect("failed to run `foo`");
 let pidfd = PidFd::from_std_checked(&child)?;
-let file_from_child = pidfd.get_file(1, GetFdFlags::empty());
+let file_from_child = pidfd.get_file(1, GetFdFlags::empty())?;
 ```
 
 Using nightly rustc:
 ```rust
+#![feature(linux_pidfd)]
+
 use pidfd_getfd::{GetFdFlags, PidFdExt};
 use std::{
     os::linux::process::{ChildExt, CommandExt},
@@ -55,6 +57,7 @@ use std::{
 
 let child = Command::new("/usr/bin/foo")
     .create_pidfd(true)
+    .spawn()
     .expect("failed to run `foo`");
 
 let file_from_child = child.pidfd()?.get_file(1, GetFdFlags::empty())?;
