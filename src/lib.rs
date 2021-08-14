@@ -4,13 +4,17 @@ use libc::{syscall, SYS_pidfd_getfd};
 use pidfd::PidFd;
 use std::{
     fs::File,
-    io,
+    // `io::Result` is renamed to provide clearer hints with rust-analyzer
+    io::{self, Result as IoResult},
     os::unix::prelude::{AsRawFd, FromRawFd, RawFd},
 };
 
 #[cfg(all(nightly, target_os = "linux"))]
 use std::os::linux::process::PidFd as StdPidFd;
 
+/// Various flags used to configure calls to [`get_file_from_pidfd`].
+///
+/// Currently, there are no flags.
 #[derive(Clone, Copy)]
 #[non_exhaustive]
 pub struct GetfdFlags;
@@ -25,19 +29,20 @@ impl GetfdFlags {
     }
 }
 
+/// An extension trait to provide a convenient interface to [`get_file_from_pidfd`].
 pub trait PidFdExt {
-    fn get_fd(&self, target_fd: RawFd, flags: GetfdFlags) -> Result<File, io::Error>;
+    fn get_fd(&self, target_fd: RawFd, flags: GetfdFlags) -> IoResult<File>;
 }
 
 impl PidFdExt for PidFd {
-    fn get_fd(&self, target_fd: RawFd, flags: GetfdFlags) -> Result<File, io::Error> {
+    fn get_fd(&self, target_fd: RawFd, flags: GetfdFlags) -> IoResult<File> {
         get_file_from_pidfd(self.as_raw_fd(), target_fd, flags)
     }
 }
 
 #[cfg(all(nightly, target_os = "linux"))]
 impl PidFdExt for StdPidFd {
-    fn get_fd(&self, target_fd: RawFd, flags: GetfdFlags) -> Result<File, io::Error> {
+    fn get_fd(&self, target_fd: RawFd, flags: GetfdFlags) -> IoResult<File> {
         get_file_from_pidfd(self.as_raw_fd(), target_fd, flags)
     }
 }
@@ -46,11 +51,10 @@ impl PidFdExt for StdPidFd {
 /// and creates a duplicate of it within this process.
 ///
 /// This is a convenience wrapper. For the raw syscall, see [`pidfd_getfd`].
-pub fn get_file_from_pidfd(
-    pidfd: RawFd,
-    target_fd: RawFd,
-    flags: GetfdFlags,
-) -> Result<File, io::Error> {
+///
+/// For more information, including the meaning of any returned [`io::Error`]s,
+/// see the man page for [`pidfd_getfd(2)`].
+pub fn get_file_from_pidfd(pidfd: RawFd, target_fd: RawFd, flags: GetfdFlags) -> IoResult<File> {
     // SAFETY: `flags` being 0 seems to be the only safety invariant for now.
     // Invalid fds return errors.
     let res = unsafe { pidfd_getfd(pidfd, target_fd, flags.bits()) };
