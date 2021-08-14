@@ -13,6 +13,25 @@ compile_error!("pidfds are currently only supported on Linux");
 mod tests {
     /// Used to allow for `no_run` tests.
     ///
+    /// Using `get_file_from_pidfd`:
+    /// ```no_run (0 is an invalid pidfd)
+    /// use pidfd_getfd::{get_file_from_pidfd, GetFdFlags};
+    /// use std::{
+    ///     io::{self, Read},
+    ///     os::unix::prelude::RawFd,
+    /// };
+    ///
+    /// fn main() -> io::Result<()> {
+    ///     let pidfd: RawFd = 0;
+    ///     let target_fd: RawFd = 0;
+    ///     let mut file = get_file_from_pidfd(pidfd, target_fd, GetFdFlags::empty())?;
+    ///     let mut buf = Vec::new();
+    ///     file.read_to_end(&mut buf)?;
+    ///     println!("{:#?}", buf);
+    ///     Ok(())
+    /// }
+    /// ```
+    ///
     /// Using `pidfd`:
     /// ```no_run (/usr/bin/foo likely does not exist and might close fd 1 regardless)
     /// use pidfd::PidFd;

@@ -24,14 +24,18 @@ is advised.
 ## Example
 ```rust
 use pidfd_getfd::{get_file_from_pidfd, GetFdFlags};
-use std::io::Read;
+use std::{
+    io::{self, Read},
+    os::unix::prelude::RawFd,
+};
 
 let pidfd: RawFd = /* ... */;
 let target_fd: RawFd = /* ... */;
-let file = get_file_from_pidfd(pidfd, target_fd, GetFdFlags::empty());
+let mut file = get_file_from_pidfd(pidfd, target_fd, GetFdFlags::empty())?;
 let mut buf = Vec::new();
 file.read_to_end(&mut buf)?;
 println!("{:#?}", buf);
+Ok(())
 ```
 
 Using `pidfd`:
