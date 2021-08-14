@@ -31,18 +31,18 @@ impl GetfdFlags {
 
 /// An extension trait to provide a convenient interface to [`get_file_from_pidfd`].
 pub trait PidFdExt {
-    fn get_fd(&self, target_fd: RawFd, flags: GetfdFlags) -> IoResult<File>;
+    fn get_file(&self, target_fd: RawFd, flags: GetfdFlags) -> IoResult<File>;
 }
 
 impl PidFdExt for PidFd {
-    fn get_fd(&self, target_fd: RawFd, flags: GetfdFlags) -> IoResult<File> {
+    fn get_file(&self, target_fd: RawFd, flags: GetfdFlags) -> IoResult<File> {
         get_file_from_pidfd(self.as_raw_fd(), target_fd, flags)
     }
 }
 
 #[cfg(all(nightly, target_os = "linux"))]
 impl PidFdExt for StdPidFd {
-    fn get_fd(&self, target_fd: RawFd, flags: GetfdFlags) -> IoResult<File> {
+    fn get_file(&self, target_fd: RawFd, flags: GetfdFlags) -> IoResult<File> {
         get_file_from_pidfd(self.as_raw_fd(), target_fd, flags)
     }
 }
