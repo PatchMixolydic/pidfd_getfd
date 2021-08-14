@@ -2,7 +2,7 @@
 name = "pidfd_getfd"
 description = "Binding to and a wrapper for the pidfd_getfd syscall"
 license = "MIT OR Apache-2.0"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2018"
 documentation = "https://docs.rs/pidfd_getfd"
 repository = "https://github.com/PatchMixolydic/pidfd_getfd"
