@@ -8,6 +8,9 @@ use std::{
     os::unix::prelude::{AsRawFd, FromRawFd, RawFd},
 };
 
+#[cfg(all(nightly, target_os = "linux"))]
+use std::os::linux::process::PidFd as StdPidFd;
+
 #[derive(Clone, Copy)]
 #[non_exhaustive]
 pub struct GetfdFlags;
@@ -27,6 +30,13 @@ pub trait PidFdExt {
 }
 
 impl PidFdExt for PidFd {
+    fn get_fd(&self, target_fd: RawFd, flags: GetfdFlags) -> Result<File, io::Error> {
+        get_file_from_pidfd(self.as_raw_fd(), target_fd, flags)
+    }
+}
+
+#[cfg(all(nightly, target_os = "linux"))]
+impl PidFdExt for StdPidFd {
     fn get_fd(&self, target_fd: RawFd, flags: GetfdFlags) -> Result<File, io::Error> {
         get_file_from_pidfd(self.as_raw_fd(), target_fd, flags)
     }
