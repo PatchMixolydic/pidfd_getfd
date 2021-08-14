@@ -9,6 +9,8 @@ repository = "https://github.com/PatchMixolydic/pidfd_getfd"
 keywords = ["pidfd", "linux", "syscall", "passing", "descriptors"]
 categories = ["api-bindings", "external-ffi-bindings", "os::linux-apis"]
 
-[dependencies]
+# gated to Linux to allow the crate to reach a `compile_error!`
+# on other platforms
+[target.'cfg(target_os = "linux")'.dependencies]
 libc = "0.2.98"
 pidfd = "0.2.4"
