@@ -15,9 +15,9 @@ use std::os::linux::process::PidFd as StdPidFd;
 /// Currently, there are no flags.
 #[derive(Clone, Copy)]
 #[non_exhaustive]
-pub struct GetfdFlags;
+pub struct GetFdFlags;
 
-impl GetfdFlags {
+impl GetFdFlags {
     pub const fn empty() -> Self {
         Self
     }
@@ -29,18 +29,18 @@ impl GetfdFlags {
 
 /// An extension trait to provide a convenient interface to [`get_file_from_pidfd`].
 pub trait PidFdExt {
-    fn get_file(&self, target_fd: RawFd, flags: GetfdFlags) -> IoResult<File>;
+    fn get_file(&self, target_fd: RawFd, flags: GetFdFlags) -> IoResult<File>;
 }
 
 impl PidFdExt for PidFd {
-    fn get_file(&self, target_fd: RawFd, flags: GetfdFlags) -> IoResult<File> {
+    fn get_file(&self, target_fd: RawFd, flags: GetFdFlags) -> IoResult<File> {
         get_file_from_pidfd(self.as_raw_fd(), target_fd, flags)
     }
 }
 
 #[cfg(feature = "nightly")]
 impl PidFdExt for StdPidFd {
-    fn get_file(&self, target_fd: RawFd, flags: GetfdFlags) -> IoResult<File> {
+    fn get_file(&self, target_fd: RawFd, flags: GetFdFlags) -> IoResult<File> {
         get_file_from_pidfd(self.as_raw_fd(), target_fd, flags)
     }
 }
@@ -54,7 +54,7 @@ impl PidFdExt for StdPidFd {
 /// see the man page for [`pidfd_getfd(2)`].
 ///
 /// [`pidfd_getfd(2)`]: https://man7.org/linux/man-pages/man2/pidfd_getfd.2.html
-pub fn get_file_from_pidfd(pidfd: RawFd, target_fd: RawFd, flags: GetfdFlags) -> IoResult<File> {
+pub fn get_file_from_pidfd(pidfd: RawFd, target_fd: RawFd, flags: GetFdFlags) -> IoResult<File> {
     // SAFETY: `flags` being 0 seems to be the only safety invariant for now.
     // Invalid fds return errors.
     let res = unsafe { pidfd_getfd(pidfd, target_fd, flags.bits()) };
