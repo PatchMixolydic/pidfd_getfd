@@ -1,3 +1,4 @@
+#![cfg_attr(feature = "nightly", feature(linux_pidfd))]
 #![deny(unsafe_op_in_unsafe_fn)]
 
 #[cfg(target_os = "linux")]

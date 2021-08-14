@@ -7,7 +7,7 @@ use std::{
     os::unix::prelude::{AsRawFd, FromRawFd, RawFd},
 };
 
-#[cfg(nightly)]
+#[cfg(feature = "nightly")]
 use std::os::linux::process::PidFd as StdPidFd;
 
 /// Various flags used to configure calls to [`get_file_from_pidfd`].
@@ -38,7 +38,7 @@ impl PidFdExt for PidFd {
     }
 }
 
-#[cfg(nightly)]
+#[cfg(feature = "nightly")]
 impl PidFdExt for StdPidFd {
     fn get_file(&self, target_fd: RawFd, flags: GetfdFlags) -> IoResult<File> {
         get_file_from_pidfd(self.as_raw_fd(), target_fd, flags)

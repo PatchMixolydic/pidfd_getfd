@@ -14,3 +14,7 @@ categories = ["api-bindings", "external-ffi-bindings", "os::linux-apis"]
 [target.'cfg(target_os = "linux")'.dependencies]
 libc = "0.2.98"
 pidfd = "0.2.4"
+
+[features]
+default = []
+nightly = []
